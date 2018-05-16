@@ -1,3 +1,5 @@
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, getTestBed } from '@angular/core/testing';
 import { Subscriber } from 'rxjs';
 import { Observable } from 'rxjs';
 import { PersistenceService }     from '../src/index';

@@ -1,7 +1,8 @@
-
 import {filter} from 'rxjs/operators';
 import { Injectable, EventEmitter }                  from '@angular/core';
 import { Observer, Subscriber, Subject ,  Observable } from 'rxjs';
+import { HttpClient }                                from '@angular/common/http';
+import { throwError }                                from 'rxjs/internal/observable/throwError';
 
 import { CacheImpl }                                 from './persistence.cache-impl';
 import { IStorage }                                  from './storage/storage.interface';
@@ -13,6 +14,9 @@ import { ItemDefinition }                            from '../types/persistence.
 import { CacheConfig }                               from '../types/persistence.cache_config';
 import { IPersistenceContainer }                     from '../abstracts/persistence.container';
 import { ICache }                                    from '../abstracts/persistence.cache';
+import { OutputWS }                                  from './../interficies/ws.output.persistence';
+import { ModelOutputData }                           from './../interficies/model.output.persistence';
+import { InputWS }                                   from './../interficies/ws.input.persistence';
 
 
 /**
@@ -30,8 +34,8 @@ import { ICache }                                    from '../abstracts/persiste
  * @export
  * @class PersistenceService
  *
- * @author Scott O'Bryan
- * @since 1.0
+ * @author Jordi Serra
+ * @since 2.0
  */
 @Injectable()
 export class PersistenceService {
@@ -325,5 +329,56 @@ export class PersistenceService {
 
     private _calculateExpires(maxAge: number) {
         return maxAge ? Date.now() + maxAge : undefined;
+    }
+
+    /**
+     * Uploading data from Webservice.
+     * @param url    url webservice
+     * @param http   httpClient
+     * @param config optional config object used to "set" the value if it has not already
+     *               been loaded.  If a "type" is not specified, memory storage will be 
+     *               used.
+     * @param method POST or GET (webservice)
+     * @param input  InputWS Webservice
+     */
+    public uploadWS(
+            url: string,
+            http: HttpClient,
+            config: PersistenceConfig = {},
+            method: string = 'POST',
+            input: InputWS = new InputWS() ) {
+        let output : ModelOutputData<OutputWS>;
+        /** call WS */
+        console.log (method);
+        if ( method === 'POST' ) {
+            http.post(url, input).subscribe((userResponse) => {
+                console.log (userResponse);
+            });
+        } else if ( method === 'GET' ) {
+            console.log('hello GET ' + url)
+            http.get(url).subscribe((userResponse) => {
+                console.log (userResponse);
+            }, error => console.log (error) );
+        } else {
+            throw new Error('No correct method (GET or POST)');
+        }
+        console.log (output);
+        
+        /** Succes? */
+        if ( !output.success ) {
+            throw new Error('ModelOutputData.success = failed ModelOutputData.status' + output.status);
+        }
+
+        /** Declare config */
+        let myConfig: PersistenceConfig = {
+            type: config.type || StorageType.MEMORY,
+            expireAfter: config.expireAfter,
+            timeout: config.timeout
+        }
+
+        /** save data */
+        output.data.forEach(element => {
+            this.set( element.key, element.value, myConfig );
+        });
     }
 }

@@ -6,6 +6,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "mock": "node ./lib/mock/config/server.js",
     "build": "ng build --prod",
     "test": "ng test --code-coverage",
     "lint": "ng lint",
@@ -55,6 +56,7 @@
     "ng-packagr": "^1.6.0",
     "ts-node": "^4.0.1",
     "tslint": "^5.8.0",
-    "typescript": "2.7.2"
+    "typescript": "2.7.2",
+    "swagger-express-middleware": "^1.0.0-alpha.12"
   }
 }

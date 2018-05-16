@@ -1,0 +1,19 @@
+swagger: "2.0"
+info:
+  version: 1.0.0
+  title: Swagger BackEnd definition
+  description: A sample API with Swagger-Express-Middleware features
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /rws-data-request:
+    get:
+      description: Returns help info
+      operationId: rws-data-request
+      responses:
+        default:
+          description: Returns if pageId has help
