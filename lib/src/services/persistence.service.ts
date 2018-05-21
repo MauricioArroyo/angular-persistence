@@ -17,6 +17,7 @@ import { ICache }                                    from '../abstracts/persiste
 import { OutputWS }                                  from './../interficies/ws.output.persistence';
 import { ModelOutputData }                           from './../interficies/model.output.persistence';
 import { InputWS }                                   from './../interficies/ws.input.persistence';
+import { CallWsService }                             from './ws/call.ws.service';
 
 
 /**
@@ -346,26 +347,26 @@ export class PersistenceService {
             http: HttpClient,
             config: PersistenceConfig = {},
             method: string = 'POST',
-            input: InputWS = new InputWS() ) {
-        let output : ModelOutputData<OutputWS>;
+            input: InputWS = undefined ) {
+        let output: any;
         /** call WS */
         console.log (method);
-        if ( method === 'POST' ) {
-            http.post(url, input).subscribe((userResponse) => {
-                console.log (userResponse);
-            });
+
+        const service: CallWsService = new CallWsService(http);
+
+        if ( method === 'POST' && input !== undefined) {
+            service.getDataPost(url, input).subscribe(
+                (data: ModelOutputData<OutputWS>) => output = { ...data });
         } else if ( method === 'GET' ) {
-            console.log('hello GET ' + url)
-            http.get(url).subscribe((userResponse) => {
-                console.log (userResponse);
-            }, error => console.log (error) );
+            service.getDataGet(url).subscribe(
+                (data: ModelOutputData<OutputWS>) => output = { ...data });
         } else {
             throw new Error('No correct method (GET or POST)');
         }
         console.log (output);
         
         /** Succes? */
-        if ( !output.success ) {
+        if ( !output.ready ) {
             throw new Error('ModelOutputData.success = failed ModelOutputData.status' + output.status);
         }
 

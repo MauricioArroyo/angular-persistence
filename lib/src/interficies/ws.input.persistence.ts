@@ -2,6 +2,6 @@
 * @author Jordi Serra
 * @since 2.0
 */
-export class InputWS {
+export interface InputWS {
     service: string; /** URL */
 }

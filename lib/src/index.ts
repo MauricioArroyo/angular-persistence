@@ -14,3 +14,4 @@ export { PersistenceModule }        from './persistence.module';
 export { ModelOutputData }          from './interficies/model.output.persistence';
 export { InputWS }                  from './interficies/ws.input.persistence';
 export { OutputWS }                 from './interficies/ws.output.persistence';
+export { CallWsService }            from './services/ws/call.ws.service';
